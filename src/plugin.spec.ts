@@ -5,6 +5,7 @@ import path from 'path'
 import { afterEach, describe, expect, it } from '@jest/globals'
 import { rollup } from 'rollup'
 import typescript from 'rollup-plugin-typescript2'
+import { v4 as uuidv4 } from 'uuid'
 
 import { dtsPathAliasPlugin } from './plugin'
 
@@ -12,7 +13,7 @@ describe('dtsPathAliasPlugin', () => {
   let basePath: string
 
   beforeEach(() => {
-    basePath = path.join(fs.realpathSync(os.tmpdir()), crypto.randomUUID())
+    basePath = path.join(fs.realpathSync(os.tmpdir()), uuidv4())
     if (!fs.existsSync(basePath)) {
       fs.mkdirSync(basePath, { recursive: true })
     }
