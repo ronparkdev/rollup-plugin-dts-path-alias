@@ -47,6 +47,5 @@
     "acorn-walk": "^8.3.3",
     "tsconfig": "^7.0.0"
   },
-  "license": "MIT",
-  "type": "module"
+  "license": "MIT"
 }
