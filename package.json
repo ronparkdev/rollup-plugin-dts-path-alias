@@ -48,5 +48,15 @@
     "acorn-walk": "^8.3.3",
     "tsconfig": "^7.0.0"
   },
-  "license": "MIT"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ronparkdev/rollup-plugin-dts-path-alias.git"
+  },
+  "keywords": [],
+  "author": "ronpark.dev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ronparkdev/rollup-plugin-dts-path-alias/issues"
+  },
+  "homepage": "https://github.com/ronparkdev/rollup-plugin-dts-path-alias#readme"
 }
