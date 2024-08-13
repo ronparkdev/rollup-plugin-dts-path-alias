@@ -7,7 +7,7 @@ import { loadSync } from 'tsconfig'
 import { processDTSFileData } from './processDTSFileData'
 import { resolvePathAlias } from './resolvePathAlias'
 
-export function dtsPathAliasPlugin(options: { cwd?: string } = {}): Plugin {
+export default function dtsPathAliasPlugin(options: { cwd?: string } = {}): Plugin {
   const { config, path: configPath } = loadSync(options?.cwd ?? process.cwd())
 
   if (!config || !configPath) {

@@ -7,7 +7,7 @@ import { rollup } from 'rollup'
 import typescript from 'rollup-plugin-typescript2'
 import { v4 as uuidv4 } from 'uuid'
 
-import { dtsPathAliasPlugin } from './plugin'
+import dtsPathAliasPlugin from './plugin'
 
 describe('dtsPathAliasPlugin', () => {
   let basePath: string

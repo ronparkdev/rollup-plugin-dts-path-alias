@@ -1,1 +1,3 @@
-export { dtsPathAliasPlugin } from './plugin.js'
+import dtsPathAliasPlugin from './plugin.js'
+
+export default dtsPathAliasPlugin
