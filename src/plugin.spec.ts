@@ -21,7 +21,7 @@ describe('dtsPathAliasPlugin', () => {
 
   afterEach(() => {
     try {
-      fs.rmdirSync(basePath, { recursive: true })
+      fs.rmSync(basePath, { recursive: true })
     } catch {
       // ignore
     }
