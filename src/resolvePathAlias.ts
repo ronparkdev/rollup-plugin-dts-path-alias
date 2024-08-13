@@ -1,35 +1,35 @@
 import path from 'path'
 
-import type { TsconfigPaths } from './define'
+import ts from 'typescript'
 
-export function resolvePathAlias({
-  baseUrl,
-  currentFilePath,
-  source,
-  aliasPaths,
-}: {
-  baseUrl: string
-  currentFilePath: string
-  source: string
-  aliasPaths: TsconfigPaths
-}): string | null {
-  const resolvedPath = (() => {
-    for (const alias in aliasPaths) {
-      const aliasPattern = new RegExp(`^${alias.replace('*', '(.*)')}$`)
-      const match = source.match(aliasPattern)
+export function makeResolvePathAlias(tsconfigFilePath: string) {
+  const tsconfigFolderPath = path.dirname(tsconfigFilePath)
 
-      if (match) {
-        return aliasPaths[alias][0].replace('*', match[1])
-      }
+  const compilerOptions = ts.parseJsonConfigFileContent(
+    ts.readConfigFile(tsconfigFilePath, ts.sys.readFile).config,
+    ts.sys,
+    path.dirname(tsconfigFilePath),
+  ).options
+  const host = ts.createCompilerHost(compilerOptions)
+
+  return function resolver(inputFilePath: string, source: string): string | null {
+    const { resolvedModule } = ts.resolveModuleName(source, inputFilePath, compilerOptions, host)
+
+    if (resolvedModule === undefined || resolvedModule.isExternalLibraryImport) {
+      return null
     }
 
-    return source
-  })()
+    const { resolvedFileName } = resolvedModule
 
-  const absoluteResolvedPath = path.resolve(baseUrl, resolvedPath)
-  const relativePath = path.relative(path.dirname(currentFilePath), absoluteResolvedPath)
-  const relativePathWithDotSlash =
-    relativePath.startsWith('./') || relativePath.startsWith('../') ? relativePath : `./${relativePath}`
+    const parsedResolvedFileName = path.parse(resolvedFileName)
 
-  return relativePathWithDotSlash
+    const inputFolderPath = path.dirname(inputFilePath)
+
+    const relativePath = path.relative(
+      path.join(tsconfigFolderPath, inputFolderPath),
+      path.join(parsedResolvedFileName.dir, parsedResolvedFileName.name),
+    )
+
+    return relativePath.startsWith('.') ? relativePath : `./${relativePath}`
+  }
 }

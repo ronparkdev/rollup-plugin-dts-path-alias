@@ -1,34 +1,23 @@
 import fs from 'fs'
-import os from 'os'
 import path from 'path'
 
 import { afterEach, describe, expect, it } from '@jest/globals'
 import { rollup } from 'rollup'
 import typescript from 'rollup-plugin-typescript2'
-import { v4 as uuidv4 } from 'uuid'
 
 import dtsPathAliasPlugin from './plugin'
+import { tempFiles } from './tempFiles'
 
 describe('dtsPathAliasPlugin', () => {
   let basePath: string
-
-  beforeEach(() => {
-    basePath = path.join(fs.realpathSync(os.tmpdir()), uuidv4())
-    if (!fs.existsSync(basePath)) {
-      fs.mkdirSync(basePath, { recursive: true })
-    }
-  })
+  let cleanUpFunc: (() => void) | null = null
 
   afterEach(() => {
-    try {
-      fs.rmSync(basePath, { recursive: true })
-    } catch {
-      // ignore
-    }
+    cleanUpFunc?.()
   })
 
   it('should correctly resolve paths in .d.ts files', async () => {
-    const fileMap: { [filePath: string]: string } = {
+    ;[basePath, cleanUpFunc] = tempFiles({
       'src/index.ts': `import { foo } from '@/foo';\nimport { bar } from 'bar';\nexport { foo, bar };\n`,
       'src/foo.ts': 'export type Foo = () => void;\nexport const foo: Foo = () => {};\n',
       'src/utils/bar.ts': `import { type Foo } from '@/foo';\nexport const bar: Foo = () => {};\n`,
@@ -50,14 +39,6 @@ describe('dtsPathAliasPlugin', () => {
         undefined,
         2,
       ),
-    }
-
-    Object.keys(fileMap).forEach(filePath => {
-      const folderPath = path.join(basePath, path.dirname(filePath))
-      if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath, { recursive: true })
-      }
-      fs.writeFileSync(path.join(basePath, filePath), fileMap[filePath])
     })
 
     const bundle = await rollup({
@@ -87,6 +68,8 @@ describe('dtsPathAliasPlugin', () => {
   })
 
   it('should throw an error if tsconfig.json is missing or invalid', () => {
+    ;[basePath, cleanUpFunc] = tempFiles({})
+
     expect(() => {
       dtsPathAliasPlugin({ cwd: basePath })
     }).toThrow('Could not load paths from tsconfig.json')

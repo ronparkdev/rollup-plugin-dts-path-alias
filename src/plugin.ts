@@ -5,36 +5,38 @@ import { type Plugin } from 'rollup'
 import { loadSync } from 'tsconfig'
 
 import { processDTSFileData } from './processDTSFileData'
-import { resolvePathAlias } from './resolvePathAlias'
+import { makeResolvePathAlias } from './resolvePathAlias'
 
 export default function dtsPathAliasPlugin(options: { cwd?: string } = {}): Plugin {
-  const { config, path: configPath } = loadSync(options?.cwd ?? process.cwd())
+  const { config: tsconfig, path: tsconfigPath } = loadSync(options?.cwd ?? process.cwd())
 
-  if (!config || !configPath) {
+  if (!tsconfig || !tsconfigPath) {
     throw new Error(`Could not load paths from tsconfig.json`)
   }
 
-  const aliasPaths = config?.compilerOptions?.paths ?? {}
+  const baseUrl = tsconfig?.compilerOptions?.baseUrl ?? './'
+
+  const resolvePathAlias = makeResolvePathAlias(tsconfigPath)
 
   return {
     name: 'dts-path-alias',
     writeBundle: {
       order: 'post',
       handler(options, bundle) {
-        const baseUrl = options.dir
         if (baseUrl) {
           for (const [fileName, chunkOrAsset] of Object.entries(bundle)) {
             if (chunkOrAsset.type === 'asset' && fileName.endsWith('.d.ts')) {
-              const filePath = path.join(baseUrl, chunkOrAsset.fileName)
+              const { fileName } = chunkOrAsset
+              const inputFilePath = path.join(baseUrl, fileName)
+              const outputFilePath = path.join(options.dir!, fileName)
 
-              const pathResolver = (source: string) =>
-                resolvePathAlias({ source, baseUrl, currentFilePath: filePath, aliasPaths })
+              const pathResolver = (source: string) => resolvePathAlias(inputFilePath, source)
 
-              const data = fs.readFileSync(filePath, { encoding: 'utf8' })
+              const data = fs.readFileSync(outputFilePath, { encoding: 'utf8' })
 
               const modifiedData = processDTSFileData(data, pathResolver)
 
-              fs.writeFileSync(filePath, modifiedData)
+              fs.writeFileSync(outputFilePath, modifiedData)
             }
           }
         }
