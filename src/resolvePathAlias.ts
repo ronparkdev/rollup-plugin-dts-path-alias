@@ -13,21 +13,21 @@ export function resolvePathAlias({
   source: string
   aliasPaths: TsconfigPaths
 }): string | null {
+  const currentDirPath = path.dirname(currentFilePath)
   const resolvedPath = (() => {
     for (const alias in aliasPaths) {
       const aliasPattern = new RegExp(`^${alias.replace('*', '(.*)')}$`)
       const match = source.match(aliasPattern)
 
       if (match) {
-        return aliasPaths[alias][0].replace('*', match[1])
+        return path.join(baseUrl, aliasPaths[alias][0].replace('*', match[1]))
       }
     }
 
-    return source
+    return path.join(currentDirPath, source)
   })()
 
-  const absoluteResolvedPath = path.resolve(baseUrl, resolvedPath)
-  const relativePath = path.relative(path.dirname(currentFilePath), absoluteResolvedPath)
+  const relativePath = path.relative(currentDirPath, resolvedPath)
   const relativePathWithDotSlash =
     relativePath.startsWith('./') || relativePath.startsWith('../') ? relativePath : `./${relativePath}`
 
