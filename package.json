@@ -21,6 +21,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-typescript": "^11.1.6",
+    "@ronpark/temp-files": "^0.0.1",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.2.0",
     "@types/uuid": "^10.0.0",

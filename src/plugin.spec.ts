@@ -2,11 +2,11 @@ import fs from 'fs'
 import path from 'path'
 
 import { afterEach, describe, expect, it } from '@jest/globals'
+import tempFiles from '@ronpark/temp-files'
 import { rollup } from 'rollup'
 import typescript from 'rollup-plugin-typescript2'
 
 import dtsPathAliasPlugin from './plugin'
-import { tempFiles } from './tempFiles'
 
 describe('dtsPathAliasPlugin', () => {
   let basePath: string

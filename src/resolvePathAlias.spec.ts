@@ -1,7 +1,8 @@
 import path from 'path'
 
+import tempFiles from '@ronpark/temp-files'
+
 import { makeResolvePathAlias } from './resolvePathAlias'
-import { tempFiles } from './tempFiles'
 
 describe('makeResolvePathAlias', () => {
   let basePath: string
