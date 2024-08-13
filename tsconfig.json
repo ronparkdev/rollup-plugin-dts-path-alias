@@ -6,7 +6,9 @@
     "module": "ES2022",
     "moduleResolution": "Bundler",
     "strict": true,
-    "target": "ESNext"
+    "target": "ESNext",
+    "declaration": true,
+    "declarationDir": "./dist/types"
   },
   "include": ["src/**/*.ts", "src/plugin.ts", "src/plugin.spec.mjs"],
   "exclude": ["src/**/*.spec.ts"]
