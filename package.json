@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-dts-path-alias",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Rollup plugin that converts TypeScript path aliases in .d.ts files to relative paths, ensuring correct type resolution in projects.",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.esm.js",
